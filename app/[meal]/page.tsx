@@ -4,6 +4,7 @@ import { use, useEffect, useState } from 'react'
 import { fetchMealById } from '@/api/index'
 
 interface Meal {
+  idMeal: string
   strMeal: string
   strMealThumb: string
   strInstructions: string
@@ -17,11 +18,33 @@ export default function MealPage({
 }) {
   const { meal } = use(params)
   const [mealData, setMealData] = useState<Meal | null>(null)
+  const [isFavorite, setIsFavorite] = useState(false)
+
+  const checkIfFavorite = (id: string) => {
+    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]')
+    setIsFavorite(favorites.some((fav: Meal) => fav.idMeal === id))
+  }
+
+  const addToFavorites = () => {
+    if (!mealData) return
+
+    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]')
+    const isAlreadyFavorite = favorites.some(
+      (fav: Meal) => fav.idMeal === mealData.idMeal,
+    )
+
+    if (!isAlreadyFavorite) {
+      favorites.push(mealData)
+      localStorage.setItem('favorites', JSON.stringify(favorites))
+      setIsFavorite(true)
+    }
+  }
 
   useEffect(() => {
     const fetchData = async () => {
       const data = await fetchMealById(meal)
       setMealData(data)
+      checkIfFavorite(data.idMeal)
     }
 
     fetchData()
@@ -47,8 +70,13 @@ export default function MealPage({
         alt={mealData.strMeal}
         className="w-full max-w-md rounded-lg"
       />
-      <button className="mt-4 rounded-lg bg-blue-500 px-4 py-2 text-white">
-        Add to Favorites
+      <button
+        onClick={addToFavorites}
+        className={`mt-4 rounded-lg px-4 py-2 text-white ${
+          isFavorite ? 'bg-green-500' : 'bg-blue-500'
+        }`}
+      >
+        {isFavorite ? 'In Favorites' : 'Add to Favorites'}
       </button>
       <div>
         <h2 className="mb-4 mt-4 text-xl">Ingredients</h2>
