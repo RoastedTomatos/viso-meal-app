@@ -1,12 +1,29 @@
 'use client'
 
-export const SearchBar = () => {
+import { useState, useEffect } from 'react'
+
+interface SearchBarProps {
+  onSearch: (query: string) => void
+}
+
+export const SearchBar = ({ onSearch }: SearchBarProps) => {
+  const [query, setQuery] = useState('')
+
+  useEffect(() => {
+    const debounceTimeout = setTimeout(() => {
+      onSearch(query)
+    }, 300)
+
+    return () => clearTimeout(debounceTimeout)
+  }, [query, onSearch])
+
   return (
     <div className="w-full min-w-[200px] max-w-sm">
       <div className="relative">
         <input
           className="ease w-full rounded-md border border-slate-200 bg-transparent py-2 pl-3 pr-28 text-sm text-slate-700 shadow-sm transition duration-300 placeholder:text-slate-400 hover:border-slate-300 focus:border-slate-400 focus:shadow focus:outline-none"
           placeholder="Search for recipes..."
+          onChange={(e) => setQuery(e.target.value)}
         />
         <button
           className="absolute right-1 top-1 flex items-center rounded border border-transparent bg-slate-800 px-2.5 py-1 text-center text-sm text-white shadow-sm transition-all hover:bg-slate-700 hover:shadow focus:bg-slate-700 focus:shadow-none active:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"

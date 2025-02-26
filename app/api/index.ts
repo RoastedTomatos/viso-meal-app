@@ -1,4 +1,3 @@
-'use client'
 export const fetchMeals = async () => {
   const meals = []
   //Tried this in my earliest projects, seems to work (Now we getting all meals)
@@ -13,4 +12,13 @@ export const fetchMeals = async () => {
   }
 
   return meals
+}
+
+export const fetchMealById = async (id: string) => {
+  const res = await fetch(
+    `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${id}`,
+  )
+  const data = await res.json()
+  console.log(data)
+  return data.meals ? data.meals[0] : null
 }

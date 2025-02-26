@@ -17,19 +17,8 @@ type MealCardProps = {
 }
 
 export const MealCard = ({ meal }: MealCardProps) => {
-  //Some hard coding to extract ingredients and measures
-  const ingredients = Object.keys(meal)
-    .filter((key) => key.startsWith('strIngredient'))
-    .map((key) => meal[key])
-    .filter((ingredient) => ingredient && ingredient.trim() !== '')
-
-  const measures = Object.keys(meal)
-    .filter((key) => key.startsWith('strMeasure'))
-    .map((key) => meal[key])
-    .filter((measure) => measure && measure.trim() !== '')
-
   return (
-    <div className="w-[calc(25%-12px)] bg-white p-4 shadow-md">
+    <div>
       <img
         src={meal.strMealThumb}
         alt={meal.strMeal}
