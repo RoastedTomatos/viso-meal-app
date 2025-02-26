@@ -1,51 +1,31 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { use, useEffect, useState } from 'react'
+import { fetchMealById } from '@/api/index'
 
-const fetchMealById = async (mealId: string) => {
-  const res = await fetch(
-    `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealId}`,
-  )
-  const data = await res.json()
-  return data.meals[0]
+interface Meal {
+  strMeal: string
+  strMealThumb: string
+  strInstructions: string
+  [key: string]: string
 }
 
-export default function MealPage({ params }: { params: { meal: string } }) {
-  const [mealData, setMealData] = useState<any>(null)
-  const [favorites, setFavorites] = useState<any[]>([])
+export default function MealPage({
+  params,
+}: {
+  params: Promise<{ meal: string }>
+}) {
+  const { meal } = use(params)
+  const [mealData, setMealData] = useState<Meal | null>(null)
 
   useEffect(() => {
     const fetchData = async () => {
-      const meal = await fetchMealById(params.meal)
-      setMealData(meal)
+      const data = await fetchMealById(meal)
+      setMealData(data)
     }
 
     fetchData()
-  }, [params.meal])
-
-  useEffect(() => {
-    const storedFavorites = localStorage.getItem('favorites')
-    if (storedFavorites) {
-      setFavorites(JSON.parse(storedFavorites))
-    }
-  }, [])
-
-  useEffect(() => {
-    if (favorites.length > 0) {
-      localStorage.setItem('favorites', JSON.stringify(favorites))
-    }
-  }, [favorites])
-
-  const handleAddToFavorites = () => {
-    if (!mealData) return
-
-    setFavorites((prevFavorites) => {
-      if (prevFavorites.some((fav) => fav.idMeal === mealData.idMeal)) {
-        return prevFavorites.filter((fav) => fav.idMeal !== mealData.idMeal)
-      }
-      return [...prevFavorites, mealData]
-    })
-  }
+  }, [meal])
 
   if (!mealData) return <div>Loading...</div>
 
@@ -67,10 +47,8 @@ export default function MealPage({ params }: { params: { meal: string } }) {
         alt={mealData.strMeal}
         className="w-full max-w-md rounded-lg"
       />
-      <button onClick={handleAddToFavorites} className="mt-4 rounded px-4 py-2 border">
-        {favorites.some((fav) => fav.idMeal === mealData.idMeal)
-          ? 'Remove from Favorites'
-          : 'Add to Favorites'}
+      <button className="mt-4 rounded-lg bg-blue-500 px-4 py-2 text-white">
+        Add to Favorites
       </button>
       <div>
         <h2 className="mb-4 mt-4 text-xl">Ingredients</h2>

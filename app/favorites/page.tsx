@@ -4,18 +4,32 @@ import { useState, useEffect } from 'react'
 import { MealCard } from '../components/MealCard'
 import Link from 'next/link'
 
+interface Meal {
+  idMeal: string
+  strMeal: string
+  strMealThumb: string
+  strInstructions: string
+  strArea: string
+  strCategory: string
+  strTags: string | null
+  strYoutube: string
+  [key: string]: string | null
+}
+
 export default function Favorites() {
-  const [favorites, setFavorites] = useState<any[]>([])
+  const [favorites, setFavorites] = useState<Meal[]>([])
 
   useEffect(() => {
-    const storedFavorites = localStorage.getItem('favorites')
-    if (storedFavorites) {
-      setFavorites(JSON.parse(storedFavorites))
+    if (typeof window !== 'undefined') {
+      const storedFavorites = localStorage.getItem('favorites')
+      if (storedFavorites) {
+        setFavorites(JSON.parse(storedFavorites))
+      }
     }
   }, [])
 
   useEffect(() => {
-    if (favorites.length > 0) {
+    if (typeof window !== 'undefined' && favorites.length > 0) {
       localStorage.setItem('favorites', JSON.stringify(favorites))
     }
   }, [favorites])
@@ -35,7 +49,7 @@ export default function Favorites() {
         Favorite Recipes
       </h1>
       <div className="flex flex-wrap gap-4">
-        {favorites.map((meal: any) => (
+        {favorites.map((meal: Meal) => (
           <Link
             key={meal.idMeal}
             href={`/${meal.idMeal}`}

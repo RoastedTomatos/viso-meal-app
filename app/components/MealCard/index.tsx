@@ -3,12 +3,13 @@
 interface Meal {
   idMeal: string
   strMeal: string
+  strMealThumb: string
+  strInstructions: string
   strArea: string
   strCategory: string
-  strInstructions: string
-  strMealThumb: string
-  strTags: string
+  strTags: string | null
   strYoutube: string
+  [key: string]: string | null
 }
 
 type MealCardProps = {
@@ -24,7 +25,9 @@ export const MealCard = ({ meal }: MealCardProps) => {
         alt={meal.strMeal}
         style={{ width: '100%', maxWidth: '300px', height: 'auto' }}
       />
-      <h3 className="flex text-center justify-center mt-5 text-xl">{meal.strMeal}</h3>
+      <h3 className="mt-5 flex justify-center text-center text-xl">
+        {meal.strMeal}
+      </h3>
     </div>
   )
 }

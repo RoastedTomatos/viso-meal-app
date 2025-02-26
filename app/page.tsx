@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { fetchMeals } from './api/index'
 import { MealCard } from './components/MealCard'
@@ -12,7 +12,11 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 8
 
-  const { data: allMeals, error, isLoading } = useQuery({
+  const {
+    data: allMeals,
+    error,
+    isLoading,
+  } = useQuery({
     queryKey: ['meals'],
     queryFn: fetchMeals,
   })
@@ -20,7 +24,7 @@ export default function Home() {
   const filteredMeals = useMemo(() => {
     if (!allMeals) return []
     return allMeals.filter((meal) =>
-      meal.strMeal.toLowerCase().includes(searchQuery.toLowerCase())
+      meal.strMeal.toLowerCase().includes(searchQuery.toLowerCase()),
     )
   }, [allMeals, searchQuery])
 
@@ -64,7 +68,7 @@ export default function Home() {
   return (
     <section className="m-5 flex flex-col">
       <h1 className="flex justify-center text-xl font-bold">Meal App</h1>
-      <div className="m-5 flex justify-center bg-white flex-col items-center">
+      <div className="m-5 flex flex-col items-center justify-center bg-white">
         <SearchBar onSearch={handleSearch} />
         <Link href="/favorites" className="underline">
           Favorites
@@ -88,8 +92,12 @@ export default function Home() {
           {pageNumbers.map((pageNumber, index) => (
             <button
               key={index}
-              onClick={() => pageNumber !== '...' && setCurrentPage(pageNumber)}
-              className={`px-4 py-2 rounded ${
+              onClick={() => {
+                if (typeof pageNumber === 'number') {
+                  setCurrentPage(pageNumber)
+                }
+              }}
+              className={`rounded px-4 py-2 ${
                 currentPage === pageNumber
                   ? 'bg-blue-500 text-white'
                   : 'bg-gray-200 text-gray-700'
@@ -102,7 +110,7 @@ export default function Home() {
           {totalPages > 7 && end < totalPages && (
             <button
               onClick={() => setCurrentPage(totalPages)}
-              className="px-4 py-2 rounded bg-gray-200 text-gray-700"
+              className="rounded bg-gray-200 px-4 py-2 text-gray-700"
             >
               {totalPages}
             </button>
